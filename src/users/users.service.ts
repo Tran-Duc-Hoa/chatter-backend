@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import { Types } from 'mongoose';
 
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
@@ -14,10 +15,18 @@ export class UsersService {
   }
 
   async create(createUserInput: CreateUserInput) {
-    return this.usersRepository.create({
-      ...createUserInput,
-      password: await this.hashPassword(createUserInput.password),
-    });
+    try {
+      const user = await this.usersRepository.create({
+        ...createUserInput,
+        password: await this.hashPassword(createUserInput.password)
+      });
+      return user;
+    } catch (error) {
+      if (error.message.includes('duplicate key error')) {
+        throw new BadRequestException('User already exists');
+      }
+      throw error;
+    }
   }
 
   findAll() {
@@ -28,21 +37,33 @@ export class UsersService {
     return this.usersRepository.findOne({ _id });
   }
 
-  async update(_id: string, updateUserInput: UpdateUserInput) {
+  async update(_id: Types.ObjectId, updateUserInput: UpdateUserInput) {
+    if (updateUserInput.password) {
+      updateUserInput.password = await this.hashPassword(updateUserInput.password);
+    }
+
     return this.usersRepository.findOneAndUpdate(
       { _id },
       {
         $set: {
-          ...updateUserInput,
-          password: updateUserInput.password
-            ? await this.hashPassword(updateUserInput.password)
-            : undefined,
-        },
-      },
+          ...updateUserInput
+        }
+      }
     );
   }
 
-  remove(_id: string) {
+  remove(_id: Types.ObjectId) {
     return this.usersRepository.findOneAndDelete({ _id });
+  }
+
+  async verifyUser(email: string, password: string) {
+    const user = await this.usersRepository.findOne({ email });
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Credentials are invalid');
+    }
+
+    return user;
   }
 }

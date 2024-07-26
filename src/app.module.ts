@@ -7,6 +7,7 @@ import { LoggerModule } from 'nestjs-pino';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './common/database/database.module';
 import { UsersModule } from './users/users.module';
 
@@ -15,12 +16,12 @@ import { UsersModule } from './users/users.module';
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: Joi.object({
-        MONGODB_URI: Joi.string().required(),
-      }),
+        MONGODB_URI: Joi.string().required()
+      })
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      autoSchemaFile: true,
+      autoSchemaFile: true
     }),
     DatabaseModule,
     UsersModule,
@@ -36,16 +37,17 @@ import { UsersModule } from './users/users.module';
               : {
                   target: 'pino-pretty',
                   options: {
-                    singleLine: true,
-                  },
+                    singleLine: true
+                  }
                 },
-            level: isProduction ? 'info' : 'debug',
-          },
+            level: isProduction ? 'info' : 'debug'
+          }
         };
-      },
+      }
     }),
+    AuthModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService]
 })
 export class AppModule {}
