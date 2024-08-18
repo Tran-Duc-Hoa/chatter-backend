@@ -7,16 +7,16 @@ import { UpdateChatInput } from './dto/update-chat.input';
 export class ChatsService {
   constructor(private readonly chatsRepository: ChatsRepository) {}
 
-  create(createChatInput: CreateChatInput, userId: string) {
+  async create(createChatInput: CreateChatInput, userId: string) {
     return this.chatsRepository.create({ ...createChatInput, userId, userIds: createChatInput.userIds || [] });
   }
 
-  findAll() {
+  async findAll() {
     return this.chatsRepository.find({});
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} chat`;
+  async findOne(_id: string) {
+    return this.chatsRepository.findOne({ _id });
   }
 
   update(id: number, updateChatInput: UpdateChatInput) {
