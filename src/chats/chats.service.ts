@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ChatsRepository } from './chats.prepository';
+import { ChatsRepository } from './chats.repository';
 import { CreateChatInput } from './dto/create-chat.input';
 import { UpdateChatInput } from './dto/update-chat.input';
 
@@ -8,7 +8,7 @@ export class ChatsService {
   constructor(private readonly chatsRepository: ChatsRepository) {}
 
   async create(createChatInput: CreateChatInput, userId: string) {
-    return this.chatsRepository.create({ ...createChatInput, userId, userIds: createChatInput.userIds || [] });
+    return this.chatsRepository.create({ ...createChatInput, userId, userIds: createChatInput.userIds || [], messages: [] });
   }
 
   async findAll() {
