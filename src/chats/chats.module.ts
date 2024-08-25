@@ -9,6 +9,6 @@ import { MessagesModule } from './messages/messages.module';
 @Module({
   imports: [DatabaseModule.forFeature([{ name: Chat.name, schema: ChatSchema }]), forwardRef(() => MessagesModule)],
   providers: [ChatsResolver, ChatsService, ChatsRepository],
-  exports: [ChatsRepository]
+  exports: [ChatsRepository, ChatsService]
 })
 export class ChatsModule {}

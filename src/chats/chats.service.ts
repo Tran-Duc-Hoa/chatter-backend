@@ -7,12 +7,18 @@ import { UpdateChatInput } from './dto/update-chat.input';
 export class ChatsService {
   constructor(private readonly chatsRepository: ChatsRepository) {}
 
+  userChatFilter(userId: string) {
+    return {
+      $or: [{ userId }, { userIds: { $in: [userId] } }, { isPrivate: false }]
+    };
+  }
+
   async create(createChatInput: CreateChatInput, userId: string) {
     return this.chatsRepository.create({ ...createChatInput, userId, userIds: createChatInput.userIds || [], messages: [] });
   }
 
-  async findAll() {
-    return this.chatsRepository.find({});
+  async findAll(userId: string) {
+    return this.chatsRepository.find({ ...this.userChatFilter(userId) });
   }
 
   async findOne(_id: string) {

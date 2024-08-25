@@ -15,4 +15,8 @@ export class Message extends AbstractEntity {
   @Field()
   @Prop()
   createdAt: Date;
+
+  @Field()
+  @Prop()
+  chatId: string;
 }
