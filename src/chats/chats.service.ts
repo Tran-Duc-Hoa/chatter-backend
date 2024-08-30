@@ -1,4 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PipelineStage, Types } from 'mongoose';
+import { PaginationArgs } from 'src/common/dto/pagination-args.dto';
 import { ChatsRepository } from './chats.repository';
 import { CreateChatInput } from './dto/create-chat.input';
 import { UpdateChatInput } from './dto/update-chat.input';
@@ -7,22 +9,57 @@ import { UpdateChatInput } from './dto/update-chat.input';
 export class ChatsService {
   constructor(private readonly chatsRepository: ChatsRepository) {}
 
-  userChatFilter(userId: string) {
-    return {
-      $or: [{ userId }, { userIds: { $in: [userId] } }, { isPrivate: false }]
-    };
-  }
-
   async create(createChatInput: CreateChatInput, userId: string) {
-    return this.chatsRepository.create({ ...createChatInput, userId, userIds: createChatInput.userIds || [], messages: [] });
+    return this.chatsRepository.create({ ...createChatInput, userId, messages: [] });
   }
 
-  async findAll(userId: string) {
-    return this.chatsRepository.find({ ...this.userChatFilter(userId) });
+  async findMany(prePipelineStages: PipelineStage[] = [], paginationArgs?: PaginationArgs) {
+    const chats = await this.chatsRepository.model.aggregate([
+      ...prePipelineStages,
+      {
+        $set: {
+          latestMessage: {
+            $cond: ['$messages', { $arrayElemAt: ['$messages', -1] }, { createdAt: new Date() }]
+          }
+        }
+      },
+      { $sort: { 'latestMessage.createdAt': -1 } },
+      { $unset: 'messages' },
+      { $skip: paginationArgs?.skip },
+      { $limit: paginationArgs?.limit },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'latestMessage.userId',
+          foreignField: '_id',
+          as: 'latestMessage.user'
+        }
+      }
+    ]);
+    chats.forEach((chat) => {
+      if (!chat.latestMessage?._id) {
+        delete chat.latestMessage;
+        return;
+      }
+
+      chat.latestMessage.user = chat.latestMessage.user?.[0];
+      delete chat.latestMessage.userId;
+      chat.latestMessage.chatId = chat._id;
+    });
+
+    return chats;
   }
 
   async findOne(_id: string) {
-    return this.chatsRepository.findOne({ _id });
+    const chats = this.findMany([
+      {
+        $match: { _id: new Types.ObjectId(_id) }
+      }
+    ]);
+
+    if (!chats[0]) throw new NotFoundException(`No chat found with id ${_id}`);
+
+    return chats[0];
   }
 
   update(id: number, updateChatInput: UpdateChatInput) {
@@ -31,5 +68,9 @@ export class ChatsService {
 
   remove(id: number) {
     return `This action removes a #${id} chat`;
+  }
+
+  async countChats() {
+    this.chatsRepository.model.countDocuments({});
   }
 }

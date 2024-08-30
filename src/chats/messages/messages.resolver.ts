@@ -1,11 +1,9 @@
-import { Inject, UseGuards } from '@nestjs/common';
+import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver, Subscription } from '@nestjs/graphql';
-import { PubSub } from 'graphql-subscriptions';
 
 import { CurrentUser } from 'src/auth/current-user.decorator';
 import { GqlAuthGuard } from 'src/auth/guards/gql-auth.guard';
 import { TokenPayload } from 'src/auth/token-payload.interface';
-import { PUB_SUB } from 'src/common/constants/injection-tokens';
 import { CreateMessageInput } from './dto/create-message.input';
 import { GetMessagesArgs } from './dto/get-messages.args';
 import { MessageCreatedArgs } from './dto/message-created.args';
@@ -14,30 +12,29 @@ import { MessagesService } from './messages.service';
 
 @Resolver(() => Message)
 export class MessagesResolver {
-  constructor(
-    private readonly messagesService: MessagesService,
-    @Inject(PUB_SUB) private readonly pubSub: PubSub
-  ) {}
+  constructor(private readonly messagesService: MessagesService) {}
 
   @Mutation(() => Message)
   @UseGuards(GqlAuthGuard)
-  createMessage(@Args('createMessageInput') createMessageInput: CreateMessageInput, @CurrentUser() user: TokenPayload) {
+  createMessage(@Args('createMessageInput') createMessageInput: CreateMessageInput, @CurrentUser() user: TokenPayload): Promise<Message> {
     return this.messagesService.create(createMessageInput, user._id);
   }
 
   @Query(() => [Message], { name: 'messages' })
   @UseGuards(GqlAuthGuard)
-  getMessages(@Args() getMessagesArgs: GetMessagesArgs, @CurrentUser() user: TokenPayload) {
-    return this.messagesService.getMessages(getMessagesArgs, user._id);
+  getMessages(@Args() getMessagesArgs: GetMessagesArgs): Promise<Message[]> {
+    return this.messagesService.getMessages(getMessagesArgs);
   }
 
   @Subscription(() => Message, {
-    filter: (payload, variables, context) => {
+    filter: (payload, variables: MessageCreatedArgs, context) => {
       const userId = context.req.user._id;
-      return payload.messageCreated.chatId === variables.chatId && userId !== payload.messageCreated.userId;
+      const message: Message = payload.messageCreated;
+
+      return variables.chatIds.includes(message.chatId) && userId !== message.user._id.toString();
     }
   })
-  messageCreated(@Args() messageCreatedArgs: MessageCreatedArgs, @CurrentUser() user: TokenPayload) {
-    return this.messagesService.messageCreated(messageCreatedArgs, user._id);
+  messageCreated(@Args() messageCreatedArgs: MessageCreatedArgs) {
+    return this.messagesService.messageCreated(messageCreatedArgs);
   }
 }

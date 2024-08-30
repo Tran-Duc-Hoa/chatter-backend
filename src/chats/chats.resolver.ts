@@ -4,6 +4,7 @@ import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from 'src/auth/current-user.decorator';
 import { GqlAuthGuard } from 'src/auth/guards/gql-auth.guard';
 import { TokenPayload } from 'src/auth/token-payload.interface';
+import { PaginationArgs } from 'src/common/dto/pagination-args.dto';
 import { ChatsService } from './chats.service';
 import { CreateChatInput } from './dto/create-chat.input';
 import { UpdateChatInput } from './dto/update-chat.input';
@@ -15,18 +16,18 @@ export class ChatsResolver {
 
   @Mutation(() => Chat)
   @UseGuards(GqlAuthGuard)
-  createChat(@Args('createChatInput') createChatInput: CreateChatInput, @CurrentUser() user: TokenPayload) {
+  async createChat(@Args('createChatInput') createChatInput: CreateChatInput, @CurrentUser() user: TokenPayload): Promise<Chat> {
     return this.chatsService.create(createChatInput, user._id);
   }
 
   @Query(() => [Chat], { name: 'chats' })
   @UseGuards(GqlAuthGuard)
-  findAll(@CurrentUser() user: TokenPayload) {
-    return this.chatsService.findAll(user._id);
+  async findAll(@Args() paginationArgs: PaginationArgs): Promise<Chat[]> {
+    return this.chatsService.findMany([], paginationArgs);
   }
 
   @Query(() => Chat, { name: 'chat' })
-  findOne(@Args('_id') _id: string) {
+  async findOne(@Args('_id') _id: string): Promise<Chat> {
     return this.chatsService.findOne(_id);
   }
 

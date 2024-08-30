@@ -6,13 +6,13 @@ import { AbstractEntity } from './abstract.entity';
 export abstract class AbstractRepository<T extends AbstractEntity> {
   protected abstract readonly logger: Logger;
 
-  constructor(protected readonly model: Model<T>) {}
+  constructor(public readonly model: Model<T>) {}
 
   async create(document: Omit<T, '_id'>): Promise<T> {
     this.logger.debug(`Creating a new document...`, document);
     const createdDocument = new this.model({
       ...document,
-      _id: new Types.ObjectId(),
+      _id: new Types.ObjectId()
     });
     return (await createdDocument.save()).toJSON() as T;
   }
@@ -28,13 +28,10 @@ export abstract class AbstractRepository<T extends AbstractEntity> {
     return document;
   }
 
-  async findOneAndUpdate(
-    filterQuery: FilterQuery<T>,
-    update: UpdateQuery<T>,
-  ): Promise<T> {
+  async findOneAndUpdate(filterQuery: FilterQuery<T>, update: UpdateQuery<T>): Promise<T> {
     const document = await this.model
       .findOneAndUpdate(filterQuery, update, {
-        new: true,
+        new: true
       })
       .lean<T>();
 

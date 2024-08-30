@@ -3,7 +3,7 @@ import { IsNotEmpty } from 'class-validator';
 
 @ArgsType()
 export class MessageCreatedArgs {
-  @Field()
-  @IsNotEmpty()
-  chatId: string;
+  @Field(() => [String])
+  @IsNotEmpty({ each: true })
+  chatIds: string[];
 }
