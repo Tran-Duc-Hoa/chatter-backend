@@ -25,8 +25,8 @@ export class ChatsService {
       },
       { $sort: { 'latestMessage.createdAt': -1 } },
       { $unset: 'messages' },
-      { $skip: paginationArgs?.skip },
-      { $limit: paginationArgs?.limit },
+      { $skip: paginationArgs?.skip || 0 },
+      { $limit: paginationArgs?.limit || 15 },
       {
         $lookup: {
           from: 'users',
@@ -71,6 +71,6 @@ export class ChatsService {
   }
 
   async countChats() {
-    this.chatsRepository.model.countDocuments({});
+    return this.chatsRepository.model.countDocuments({});
   }
 }
