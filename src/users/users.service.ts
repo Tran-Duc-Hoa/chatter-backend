@@ -2,13 +2,18 @@ import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/
 import * as bcrypt from 'bcrypt';
 import { Types } from 'mongoose';
 
+import { S3Service } from 'src/common/s3/s3.service';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { UsersRepository } from './user.repository';
+import { USERS_BUCKET, USERS_IMAGE_FILE_EXTENSION } from './users.constant';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(
+    private readonly usersRepository: UsersRepository,
+    private readonly s3Service: S3Service
+  ) {}
 
   async hashPassword(password: string) {
     return bcrypt.hash(password, 10);
@@ -65,5 +70,9 @@ export class UsersService {
     }
 
     return user;
+  }
+
+  async uploadImage(file: Buffer, userId: string) {
+    await this.s3Service.upload({ bucket: USERS_BUCKET, key: `${userId}.${USERS_IMAGE_FILE_EXTENSION}`, file });
   }
 }
