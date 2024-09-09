@@ -5,6 +5,8 @@ import { Types } from 'mongoose';
 import { S3Service } from 'src/common/s3/s3.service';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
+import { UserDocument } from './entities/user.document';
+import { User } from './entities/user.entity';
 import { UsersRepository } from './user.repository';
 import { USERS_BUCKET, USERS_IMAGE_FILE_EXTENSION } from './users.constant';
 
@@ -21,10 +23,12 @@ export class UsersService {
 
   async create(createUserInput: CreateUserInput) {
     try {
-      const user = await this.usersRepository.create({
-        ...createUserInput,
-        password: await this.hashPassword(createUserInput.password)
-      });
+      const user = this.toEntity(
+        await this.usersRepository.create({
+          ...createUserInput,
+          password: await this.hashPassword(createUserInput.password)
+        })
+      );
       return user;
     } catch (error) {
       if (error.message.includes('duplicate key error')) {
@@ -34,12 +38,12 @@ export class UsersService {
     }
   }
 
-  findAll() {
-    return this.usersRepository.find({});
+  async findAll() {
+    return (await this.usersRepository.find({})).map((userDocument) => this.toEntity(userDocument));
   }
 
-  findOne(_id: string) {
-    return this.usersRepository.findOne({ _id });
+  async findOne(_id: string) {
+    return this.toEntity(await this.usersRepository.findOne({ _id }));
   }
 
   async update(_id: Types.ObjectId, updateUserInput: UpdateUserInput) {
@@ -47,18 +51,20 @@ export class UsersService {
       updateUserInput.password = await this.hashPassword(updateUserInput.password);
     }
 
-    return this.usersRepository.findOneAndUpdate(
-      { _id },
-      {
-        $set: {
-          ...updateUserInput
+    return this.toEntity(
+      await this.usersRepository.findOneAndUpdate(
+        { _id },
+        {
+          $set: {
+            ...updateUserInput
+          }
         }
-      }
+      )
     );
   }
 
-  remove(_id: Types.ObjectId) {
-    return this.usersRepository.findOneAndDelete({ _id });
+  async remove(_id: Types.ObjectId) {
+    return this.toEntity(await this.usersRepository.findOneAndDelete({ _id }));
   }
 
   async verifyUser(email: string, password: string) {
@@ -69,10 +75,24 @@ export class UsersService {
       throw new UnauthorizedException('Credentials are invalid');
     }
 
-    return user;
+    return this.toEntity(user);
   }
 
   async uploadImage(file: Buffer, userId: string) {
-    await this.s3Service.upload({ bucket: USERS_BUCKET, key: `${userId}.${USERS_IMAGE_FILE_EXTENSION}`, file });
+    await this.s3Service.upload({ bucket: USERS_BUCKET, key: this.getUserImage(userId), file });
+  }
+
+  toEntity(userDocument: UserDocument): User {
+    const user = {
+      ...userDocument,
+      imageUrl: this.s3Service.getObjectUrl(USERS_BUCKET, this.getUserImage(userDocument._id.toHexString()))
+    };
+    delete user.password;
+
+    return user;
+  }
+
+  private getUserImage(userId: string) {
+    return `${userId}.${USERS_IMAGE_FILE_EXTENSION}`;
   }
 }

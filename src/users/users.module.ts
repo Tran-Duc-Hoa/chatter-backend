@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
 import { DatabaseModule } from 'src/common/database/database.module';
 import { S3Module } from 'src/common/s3/s3.module';
-import { User, UserSchema } from './entities/user.entity';
+import { UserSchema } from './entities/user.document';
+import { User } from './entities/user.entity';
 import { UsersRepository } from './user.repository';
 import { UsersController } from './users.controller';
 import { UsersResolver } from './users.resolver';
