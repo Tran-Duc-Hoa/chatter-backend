@@ -4,12 +4,13 @@ import { Model } from 'mongoose';
 
 import { AbstractRepository } from 'src/common/database/abstract.repository';
 import { UserDocument } from './entities/user.document';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UsersRepository extends AbstractRepository<UserDocument> {
   protected readonly logger = new Logger(UsersRepository.name);
 
-  constructor(@InjectModel(UserDocument.name) userModel: Model<UserDocument>) {
+  constructor(@InjectModel(User.name) userModel: Model<UserDocument>) {
     super(userModel);
   }
 }
