@@ -26,6 +26,7 @@ import { UsersModule } from './users/users.module';
       driver: ApolloDriver,
       useFactory: (authService: AuthService) => ({
         autoSchemaFile: true,
+        cors: true,
         subscriptions: {
           'graphql-ws': {
             onConnect: (context: any) => {
