@@ -11,7 +11,7 @@ import { AuthModule } from './auth/auth.module';
 import { AuthService } from './auth/auth.service';
 import { ChatsModule } from './chats/chats.module';
 import { DatabaseModule } from './common/database/database.module';
-import { PubSubModule } from './common/pubsub.module';
+import { PubSubModule } from './common/pubsub/pubsub.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
