@@ -37,7 +37,6 @@
         }
     ],
     "cpu": "512",
-    "enableFaultInjection": false,
     "executionRoleArn": "arn:aws:iam::418142863284:role/ecsTaskExecutionRole",
     "family": "chatter-backend-task-definition",
     "memory": "3072",
