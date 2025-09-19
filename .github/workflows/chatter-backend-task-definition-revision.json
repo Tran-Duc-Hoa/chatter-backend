@@ -1,78 +1,29 @@
 {
-    "compatibilities": ["EC2", "FARGATE"],
-    "containerDefinitions": [
-        {
-            "cpu": 0,
-            "essential": true,
-            "image": "418142863284.dkr.ecr.ap-southeast-1.amazonaws.com/chatter-backend:latest",
-            "logConfiguration": {
-                "logDriver": "awslogs",
-                "options": {
-                    "awslogs-group": "/ecs/chatter-backend-task-definition",
-                    "awslogs-create-group": "true",
-                    "awslogs-region": "ap-southeast-1",
-                    "awslogs-stream-prefix": "ecs"
-                },
-                "secretOptions": []
-            },
-            "mountPoints": [],
-            "name": "chatter-backend",
-            "portMappings": [
-                {
-                    "appProtocol": "http",
-                    "containerPort": 3000,
-                    "hostPort": 3000,
-                    "name": "chatter-backend-3000-tcp",
-                    "protocol": "tcp"
-                }
-            ],
-            "systemControls": [],
-            "ulimits": [],
-            "volumesFrom": []
-        }
-    ],
-    "cpu": "512",
-    "executionRoleArn": "arn:aws:iam::418142863284:role/ecsTaskExecutionRole",
-    "family": "chatter-backend-task-definition",
-    "memory": "1024",
-    "networkMode": "awsvpc",
-    "placementConstraints": [],
-    "registeredAt": "2025-09-19T01:40:23.977Z",
-    "registeredBy": "arn:aws:iam::418142863284:root",
-    "requiresAttributes": [
-        {
-            "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+    "cpu": 0,
+    "essential": true,
+    "image": "418142863284.dkr.ecr.ap-southeast-1.amazonaws.com/chatter-backend@sha256:3d281d7cdb71658dd5272da4f530be54c206c015d21d711bad425ad1f72a364f",
+    "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+            "awslogs-group": "/ecs/chatter-backend-task-definition",
+            "awslogs-create-group": "true",
+            "awslogs-region": "ap-southeast-1",
+            "awslogs-stream-prefix": "ecs"
         },
-        {
-            "name": "ecs.capability.execution-role-awslogs"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.ecr-auth"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
-        },
-        {
-            "name": "ecs.capability.execution-role-ecr-pull"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
-        },
-        {
-            "name": "ecs.capability.task-eni"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.29"
-        }
-    ],
-    "requiresCompatibilities": ["FARGATE"],
-    "revision": 3,
-    "runtimePlatform": {
-        "cpuArchitecture": "X86_64",
-        "operatingSystemFamily": "LINUX"
+        "secretOptions": []
     },
-    "status": "ACTIVE",
-    "taskDefinitionArn": "arn:aws:ecs:ap-southeast-1:418142863284:task-definition/chatter-backend-task-definition:3",
-    "volumes": [],
-    "tags": []
+    "mountPoints": [],
+    "name": "chatter-backend",
+    "portMappings": [
+        {
+            "appProtocol": "http",
+            "containerPort": 3000,
+            "hostPort": 3000,
+            "name": "chatter-backend-3000-tcp",
+            "protocol": "tcp"
+        }
+    ],
+    "systemControls": [],
+    "ulimits": [],
+    "volumesFrom": []
 }
