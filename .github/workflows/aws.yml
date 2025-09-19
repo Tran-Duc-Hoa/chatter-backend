@@ -89,12 +89,12 @@ jobs:
           container-name: ${{ env.CONTAINER_NAME }}
           image: ${{ steps.build-image.outputs.image }}
           environment-variables: |
-            PORT: 3000
-            DB_NAME: chatter
-            NODE_ENV: production
-            JWT_EXPIRATION_TIME: 3600
-            MONGODB_URI: 'arn:aws:secretsmanager:ap-southeast-1:418142863284:secret:chat-backend-secrets-Wei9Nl:MONGODB_URI'
-            JWT_SECRET: 'arn:aws:secretsmanager:ap-southeast-1:418142863284:secret:chat-backend-secrets-Wei9Nl:JWT_SECRET'
+            PORT=3000
+            DB_NAME=chatter
+            NODE_ENV=production
+            JWT_EXPIRATION_TIME=3600
+            MONGODB_URI=arn:aws:secretsmanager:ap-southeast-1:418142863284:secret:chat-backend-secrets-Wei9Nl:MONGODB_URI
+            JWT_SECRET=arn:aws:secretsmanager:ap-southeast-1:418142863284:secret:chat-backend-secrets-Wei9Nl:JWT_SECRET
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
