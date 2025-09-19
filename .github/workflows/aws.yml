@@ -80,15 +80,6 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
-
-      - name: Get MONGODB_URI from AWS Secrets Manager
-        id: secrets
-        run: |
-          MONGODB_URI=$(aws secretsmanager get-secret-value --secret-id chat-backend-secrets-Wei9Nl --query 'SecretString' --output text | jq -r .MONGODB_URI)
-          echo "MONGODB_URI=$MONGODB_URI" >> $GITHUB_ENV
-          JWT_SECRET=$(aws secretsmanager get-secret-value --secret-id chat-backend-secrets-Wei9Nl --query 'SecretString' --output text | jq -r .JWT_SECRET)
-          echo "JWT_SECRET=$JWT_SECRET" >> $GITHUB_ENV
-
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
@@ -101,8 +92,8 @@ jobs:
             DB_NAME=chatter
             NODE_ENV=production
             JWT_EXPIRATION_TIME=3600
-            MONGODB_URI=${{ env.MONGODB_URI }}
-            JWT_SECRET=${{ env.JWT_SECRET }}
+            MONGODB_URI=${{ secrets.MONGODB_URI }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
