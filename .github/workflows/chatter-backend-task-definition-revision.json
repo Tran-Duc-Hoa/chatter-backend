@@ -3,40 +3,6 @@
     "containerDefinitions": [
         {
             "cpu": 0,
-            "environment": [
-                {
-                    "name": "PORT",
-                    "value": "3000"
-                },
-                {
-                    "name": "JWT_SECRET",
-                    "value": "egCmi3fJRTffk5WnJnjvkbGNCNBV11s1XkUtZMwi0Ro="
-                },
-                {
-                    "name": "AWS_SECRET_ACCESS_KEY",
-                    "value": "xFN595wuZNPXhxhDqdozDJ2KCPLJhQ+z7u0kRnmL"
-                },
-                {
-                    "name": "NODE_ENV",
-                    "value": "production"
-                },
-                {
-                    "name": "DB_NAME",
-                    "value": "chatter"
-                },
-                {
-                    "name": "MONGODB_URI",
-                    "value": "mongodb+srv://chatter-backend:thientaidh01@cluster0.cwymh.mongodb.net/chatter-backend?retryWrites=true&w=majority&appName=Cluster0"
-                },
-                {
-                    "name": "JWT_EXPIRATION",
-                    "value": "3600"
-                },
-                {
-                    "name": "AWS_ACCESS_KEY",
-                    "value": "AKIAWCW2BX62MB5K26M2"
-                }
-            ],
             "environmentFiles": [],
             "essential": true,
             "image": "418142863284.dkr.ecr.ap-southeast-1.amazonaws.com/chatter-backend:latest",
