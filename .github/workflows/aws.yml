@@ -91,7 +91,7 @@ jobs:
             PORT=3000
             DB_NAME=chatter
             NODE_ENV=production
-            JWT_EXPIRATION_TIME=3600
+            JWT_EXPIRATION=3600
             MONGODB_URI=${{ secrets.MONGODB_URI }}
             JWT_SECRET=${{ secrets.JWT_SECRET }}
 
