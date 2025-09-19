@@ -3,7 +3,6 @@
     "containerDefinitions": [
         {
             "cpu": 0,
-            "environmentFiles": [],
             "essential": true,
             "image": "418142863284.dkr.ecr.ap-southeast-1.amazonaws.com/chatter-backend:latest",
             "logConfiguration": {
