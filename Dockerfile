@@ -28,6 +28,7 @@ FROM node:24-alpine AS production
 # Set the working directory again.
 WORKDIR /usr/src/app
 
+RUN apk add --no-cache curl
 # Copy only the necessary files from the 'build' stage.
 # This keeps the final image small and secure.
 COPY --from=build /usr/src/app/package*.json ./
