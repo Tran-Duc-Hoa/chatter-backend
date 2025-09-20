@@ -21,7 +21,7 @@
         {
           "appProtocol": "http",
           "containerPort": 3000,
-          "hostPort": 80,
+          "hostPort": 3000,
           "name": "chatter-backend-3000-tcp",
           "protocol": "tcp"
         }
