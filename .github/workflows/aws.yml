@@ -94,6 +94,8 @@ jobs:
             JWT_EXPIRATION=3600
             MONGODB_URI=${{ secrets.MONGODB_URI }}
             JWT_SECRET=${{ secrets.JWT_SECRET }}
+            REDIS_HOST=${{ secrets.REDIS_HOST }}
+            REDIS_PORT=${{ secrets.REDIS_PORT }}
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
