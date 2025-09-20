@@ -35,7 +35,7 @@ env:
   ECR_REPOSITORY: chatter-backend # set this to your Amazon ECR repository name
   ECS_SERVICE: chatter-backend-ecs-service # set this to your Amazon ECS service name
   ECS_CLUSTER: chatter-backend # set this to your Amazon ECS cluster name
-  ECS_TASK_DEFINITION: arn:aws:ecs:ap-southeast-1:418142863284:task-definition/chatter-backend-task-definition:8
+  ECS_TASK_DEFINITION: ./ecs-task-def.json # set this to the path to your ECS task definition JSON file
   CONTAINER_NAME:
     chatter-backend # set this to the name of the container in the
     # containerDefinitions section of your task definition
